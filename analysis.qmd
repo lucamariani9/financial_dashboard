@@ -1,0 +1,334 @@
+---
+title: "Financial Dashboard"
+format: html
+---
+
+## S&P Historical Performance & Simulation
+
+```{r}
+#| echo: false
+library(tidyquant)
+library(ggplot2)
+library(dplyr)
+
+sp500 <- tq_get("^GSPC", 
+from = "1950-01-01")
+sp500
+
+### Historical S&P 500 Index Level
+### Index Level Over Time ### We're using the Return formula (Rt= (Pt/Pt-1)-1)
+ggplot(data = sp500, aes(x = date, y = adjusted)) + geom_line()
+
+### Historical Daily Returns
+sp500 <- sp500 |> 
+    mutate(
+        daily_return = adjusted / lag(adjusted) -1 
+    )
+ggplot(data = sp500, aes(x = date, y = daily_return)) + geom_line()
+    sp500
+
+    annual_returns <- sp500 |> 
+        tq_transmute(
+            select = adjusted,
+            mutate_fun = periodReturn,
+            period = "yearly",
+            type = "arithmetic"
+        )
+        annual_returns
+
+        ### Annual Returns
+        ggplot(
+            data = annual_returns,
+            aes(x = date, y = yearly.returns)
+            ) + geom_col() + 
+                scale_y_continuous(labels = scales::percent) +
+                labs(
+                    title = "S&P 500 Annual Returns",
+                    x = "Year",
+                    y = "Annual Return"
+                )
+
+                ### Average Annnual Return, Median and Standard Deviation (Basically the volatility)
+
+                mean(annual_returns$yearly.returns)
+                median(annual_returns$yearly.returns)
+                sd(annual_returns$yearly.returns)
+
+### The distribution of annual returns
+
+ggplot(
+    data = annual_returns, 
+    aes(x = yearly.returns)
+)+ geom_histogram(bins = 30, color = "white") +
+    scale_x_continuous(labels = scales::percent) + 
+    labs(title = "Distribution of the S&P 500 Annual Returns",
+    x = "Annual Return",
+    y = "Number of Years")
+
+### What percentage of years in our dataset had a negative S&P 500 return?
+## Below is a smart way to calculate that using the mean and conditional
+mean(annual_returns$yearly.returns < 0)
+
+### Getting the actual number of negative years
+annual_returns$yearly.returns < 0
+sum(annual_returns$yearly.returns < 0)
+
+### Calculating the Geometric Average Annual Return (Media Geometrica)
+prod(1 + annual_returns$yearly.returns)^(1 / nrow(annual_returns)) - 1
+
+### 9.61% is the arithmetic average of individual annual returns
+### 8.29% is the constant compounded annual rate equivalent to the historical sequence in our dataset
+
+### Mathematical Representation of Variation of Returns
+
+return_stats <- annual_returns |> 
+    summarize(
+        mean_return = mean(yearly.returns),
+        median_return = median(yearly.returns),
+        sd_return = sd(yearly.returns),
+        min_return = min(yearly.returns),
+        max_returns = max(yearly.returns)
+    )
+
+    return_stats
+
+### THE NORMAL DISTRIBUTION
+
+rnorm(
+    n=1,
+    mean = return_stats$mean_return,
+    sd = return_stats$sd_return
+)
+###If you want it in %
+scales::percent(
+    rnorm(
+    n=1,
+    mean = return_stats$mean_return,
+    sd = return_stats$sd_return
+)
+)
+
+### Going from one random year to a sequence of hypothetical future years.
+
+simulated_returns <- rnorm(
+    n=30,
+    mean = return_stats$mean_return,
+    sd = return_stats$sd_return
+)
+### a possible 30 year path.
+
+###Investing $10k once. Results in 30 years.
+
+initial_wealth <- 10000
+wealth_path <- initial_wealth * cumprod(1 + simulated_returns)
+
+wealth_path
+
+simulation <- data.frame(year = 1:30,
+rate = simulated_returns,
+wealth = wealth_path)
+
+simulation
+
+ggplot(
+    data = simulation,
+    aes(x = year, y = wealth)) + 
+        geom_line() + 
+        labs(
+            title = "One Simulated 30-Year Investment Path",
+            x = "Year",
+            y = "Portfolio Value"
+        )
+
+### Let's make it start from year 0 (10K)
+
+simulation <- data.frame(
+    year = 0:30,
+    wealth = c(initial_wealth, wealth_path))
+
+### Then run the same plot as before.
+
+### Let's run 3 simulated paths
+
+simulated_returns_3 <- matrix(
+    rnorm(
+        n = 30 * 3,
+        mean = return_stats$mean_return,
+        sd = return_stats$sd_return
+    ),
+    nrow = 30,
+    ncol = 3
+)
+
+simulated_returns_3
+
+### Converting those returns into wealth paths
+
+wealth_paths_3 <- apply(
+    simulated_returns_3,
+    2,
+    function(x) initial_wealth * cumprod(1 + x)
+)
+wealth_paths_3
+
+
+### Visualizing these 3 simulations
+simulation_3 <- data.frame(
+    year = 0:30,
+    path_1 = c(initial_wealth, wealth_paths_3[, 1]),
+    path_2 = c(initial_wealth, wealth_paths_3[, 2]),
+    path_3 = c(initial_wealth, wealth_paths_3[, 3])
+)
+
+simulation_3
+
+ggplot(data = simulation_3,
+aes(x = year)) + 
+    geom_line(aes(y = path_1)) + 
+    geom_line(aes(y = path_2)) +
+    geom_line(aes(y = path_3)) + 
+    labs(
+        title = "Three Simulated 30-Year Investment Paths",
+            x = "Year",
+            y = "Portfolio Value",
+    )
+
+    ### Transforming the dataset from Wide format to Long format. 
+
+    library(tidyr)
+    simulation_3_long <- simulation_3 |>
+        pivot_longer(
+            cols = starts_with("path_"),
+            names_to = "path",
+            values_to = "wealth"
+        )
+        simulation_3_long
+
+        ggplot(
+            data = simulation_3_long,
+            aes(
+                x = year,
+                y = wealth,
+                group = path
+            )
+        ) +
+            geom_line() +
+            labs(
+                title = "Three Simulated 30 Year Investment Paths",
+                x = "Year",
+                y = "Portfolio Value"
+            )
+
+### group = path connects observations belonging to the same path together. 
+
+### MONTECARLO SIMULATION: 1000 POSSIBLE 30 YEAR FUTURES
+
+n_years <- 30
+n_simulations <- 1000
+
+set.seed(123) ### if you rerun the code with seed 123 (or whatever number), you get the same sequence again.
+
+simulated_returns_1000 <- matrix(
+    rnorm(
+        n = n_years * n_simulations,
+        mean = return_stats$mean_return,
+        sd = return_stats$sd_return
+    ),
+    nrow = n_years,
+    ncol = n_simulations
+)
+
+dim(simulated_returns_1000)
+
+### Compunding Formula to each column
+
+wealth_paths_1000 <- apply(
+    simulated_returns_1000,
+    2,
+    function(x) initial_wealth * cumprod(1 + x)
+)
+dim(wealth_paths_1000)
+
+### Let's see the final row (where the investor ended up after the 30 years in each of the 1000 scenarios)
+
+ending_wealth <- wealth_paths_1000[n_years, ]  ### We had set up n_years = 30. So row 30.
+ending_wealth
+
+length(ending_wealth)
+
+summary(ending_wealth)
+
+ending_wealth_df <- data.frame(
+    wealth = ending_wealth
+)
+
+ggplot(
+    data = ending_wealth_df,
+    aes(x = wealth)
+) +
+    geom_histogram() +
+    labs(
+        title = "Distribution of Ending Wealth After 30 Years",
+        x = "Ending Portfolio Value",
+        y = "Number of Simulations"
+    )
+
+    ### Percentiles
+    quantile(
+        ending_wealth,
+        probs = c(0.10, 0.50, 0.90)
+    )
+
+median_path <- apply(
+    wealth_paths_1000,
+    1,
+    median
+)    
+median_path
+
+lower_path <- apply(
+    wealth_paths_1000,
+    1,
+    quantile,
+    probs = 0.90
+)
+lower_path
+
+upper_path <- apply(
+    wealth_paths_1000,
+    1,
+    quantile,
+    probs = 0.10
+)
+upper_path
+
+### Putting median_path, lower_path and upper_path in one data frame
+
+percentile_paths <- data.frame(
+    year = 1:n_years,
+    lower = lower_path,
+    median = median_path,
+    upper = upper_path
+)
+
+percentile_paths
+
+###
+
+ggplot(
+    data = percentile_paths,
+    aes(x = year)
+) +
+    geom_ribbon(
+        aes(ymin = lower, ymax = upper),
+        alpha = 0.3
+    ) + 
+        geom_line(
+            aes(y = median)
+        ) + 
+            labs(
+                title = "Montecarlo Simulation of Portfolio Wealth",
+                x = "Year",
+                y = "Portfolio Value"
+            )
+```

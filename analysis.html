@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Financial Dashboard</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="analysis_files/libs/clipboard/clipboard.min.js"></script>
+<script src="analysis_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="analysis_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="analysis_files/libs/quarto-html/popper.min.js"></script>
+<script src="analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="analysis_files/libs/quarto-html/anchor.min.js"></script>
+<link href="analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="analysis_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="analysis_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="analysis_files/libs/bootstrap/bootstrap-917079515d91bccb85b543faf8aa8bb6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Financial Dashboard</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sp-historical-performance-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="sp-historical-performance-simulation">S&amp;P Historical Performance &amp; Simulation</h2>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyquant packages ─────────────────────── tidyquant 1.0.12 ──
+✔ PerformanceAnalytics 2.1.0      ✔ TTR                  0.24.4
+✔ quantmod             0.4.29     ✔ xts                  0.14.3
+── Conflicts ────────────────────────────────────────── tidyquant_conflicts() ──
+✖ zoo::as.Date()                 masks base::as.Date()
+✖ zoo::as.Date.numeric()         masks base::as.Date.numeric()
+✖ PerformanceAnalytics::legend() masks graphics::legend()
+✖ quantmod::summary()            masks base::summary()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+######################### Warning from 'xts' package ##########################
+#                                                                             #
+# The dplyr lag() function breaks how base R's lag() function is supposed to  #
+# work, which breaks lag(my_xts). Calls to lag(my_xts) that you type or       #
+# source() into this session won't work correctly.                            #
+#                                                                             #
+# Use stats::lag() to make sure you're not using dplyr::lag(), or you can add #
+# conflictRules('dplyr', exclude = 'lag') to your .Rprofile to stop           #
+# dplyr from breaking base R's lag() function.                                #
+#                                                                             #
+# Code in packages is not affected. It's protected by R's namespace mechanism #
+# Set `options(xts.warn_dplyr_breaks_lag = FALSE)` to suppress this warning.  #
+#                                                                             #
+###############################################################################
+
+
+Attaching package: 'dplyr'
+
+
+The following objects are masked from 'package:xts':
+
+    first, last
+
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 19,317 × 8
+   symbol date        open  high   low close  volume adjusted
+   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+ 1 ^GSPC  1950-01-03  16.7  16.7  16.7  16.7 1260000     16.7
+ 2 ^GSPC  1950-01-04  16.9  16.9  16.9  16.9 1890000     16.9
+ 3 ^GSPC  1950-01-05  16.9  16.9  16.9  16.9 2550000     16.9
+ 4 ^GSPC  1950-01-06  17.0  17.0  17.0  17.0 2010000     17.0
+ 5 ^GSPC  1950-01-09  17.1  17.1  17.1  17.1 2520000     17.1
+ 6 ^GSPC  1950-01-10  17.0  17.0  17.0  17.0 2160000     17.0
+ 7 ^GSPC  1950-01-11  17.1  17.1  17.1  17.1 2630000     17.1
+ 8 ^GSPC  1950-01-12  16.8  16.8  16.8  16.8 2970000     16.8
+ 9 ^GSPC  1950-01-13  16.7  16.7  16.7  16.7 3330000     16.7
+10 ^GSPC  1950-01-16  16.7  16.7  16.7  16.7 1460000     16.7
+# ℹ 19,307 more rows</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 19,317 × 9
+   symbol date        open  high   low close  volume adjusted daily_return
+   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;
+ 1 ^GSPC  1950-01-03  16.7  16.7  16.7  16.7 1260000     16.7     NA      
+ 2 ^GSPC  1950-01-04  16.9  16.9  16.9  16.9 1890000     16.9      0.0114 
+ 3 ^GSPC  1950-01-05  16.9  16.9  16.9  16.9 2550000     16.9      0.00475
+ 4 ^GSPC  1950-01-06  17.0  17.0  17.0  17.0 2010000     17.0      0.00295
+ 5 ^GSPC  1950-01-09  17.1  17.1  17.1  17.1 2520000     17.1      0.00589
+ 6 ^GSPC  1950-01-10  17.0  17.0  17.0  17.0 2160000     17.0     -0.00293
+ 7 ^GSPC  1950-01-11  17.1  17.1  17.1  17.1 2630000     17.1      0.00352
+ 8 ^GSPC  1950-01-12  16.8  16.8  16.8  16.8 2970000     16.8     -0.0193 
+ 9 ^GSPC  1950-01-13  16.7  16.7  16.7  16.7 3330000     16.7     -0.00537
+10 ^GSPC  1950-01-16  16.7  16.7  16.7  16.7 1460000     16.7      0.00300
+# ℹ 19,307 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 77 × 2
+   date       yearly.returns
+   &lt;date&gt;              &lt;dbl&gt;
+ 1 1950-12-29         0.226 
+ 2 1951-12-31         0.163 
+ 3 1952-12-31         0.118 
+ 4 1953-12-31        -0.0662
+ 5 1954-12-31         0.450 
+ 6 1955-12-30         0.264 
+ 7 1956-12-31         0.0262
+ 8 1957-12-31        -0.143 
+ 9 1958-12-31         0.381 
+10 1959-12-31         0.0848
+# ℹ 67 more rows</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.09636773</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1240084</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1643121</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2597403</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
+[13]  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE
+[25]  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+[37] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+[49] FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+[61] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+[73]  TRUE FALSE FALSE FALSE FALSE</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 20</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0831403</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  mean_return median_return sd_return min_return max_returns
+        &lt;dbl&gt;         &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
+1      0.0964         0.124     0.164     -0.385       0.450</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2285048</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "18%"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 10746.00 12311.37 12521.26 14264.81 16096.24 17439.35 16612.16 19503.45
+ [9] 19498.33 18859.11 25316.88 31525.13 39739.79 55514.36 68116.14 60307.84
+[17] 64631.82 56142.81 55526.45 62499.95 58746.04 54868.40 76430.18 72494.76
+[25] 73657.49 76899.30 53372.12 58598.06 76569.49 93792.47</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   year          rate   wealth
+1     1  0.0746004654 10746.00
+2     2  0.1456694842 12311.37
+3     3  0.0170486255 12521.26
+4     4  0.1392470534 14264.81
+5     5  0.1283879371 16096.24
+6     6  0.0834427418 17439.35
+7     7 -0.0474327383 16612.16
+8     8  0.1740465572 19503.45
+9     9 -0.0002622599 19498.33
+10   10 -0.0327836243 18859.11
+11   11  0.3424220347 25316.88
+12   12  0.2452216655 31525.13
+13   13  0.2605752509 39739.79
+14   14  0.3969463372 55514.36
+15   15  0.2270003639 68116.14
+16   16 -0.1146321250 60307.84
+17   17  0.0716984953 64631.82
+18   18 -0.1313441256 56142.81
+19   19 -0.0109784452 55526.45
+20   20  0.1255886855 62499.95
+21   21 -0.0600625106 58746.04
+22   22 -0.0660068116 54868.40
+23   23  0.3929724484 76430.18
+24   24 -0.0514903701 72494.76
+25   25  0.0160389018 73657.49
+26   26  0.0440118953 76899.30
+27   27 -0.3059478840 53372.12
+28   28  0.0979151524 58598.06
+29   29  0.3066898118 76569.49
+30   30  0.2249326629 93792.47</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               [,1]         [,2]         [,3]
+ [1,] -0.0702615790 -0.014263349  0.154633954
+ [2,] -0.0421134017  0.081515534  0.311315822
+ [3,]  0.0771162430  0.181717467  0.077937526
+ [4,]  0.3504363123 -0.022813401  0.186292712
+ [5,]  0.2788863322  0.038563318 -0.093529934
+ [6,] -0.1698873757  0.124203304 -0.018539089
+ [7,]  0.1228848943  0.248707477  0.012365326
+ [8,]  0.2290860713  0.188701534  0.285094072
+ [9,]  0.2577600018 -0.180925182 -0.030555415
+[10,] -0.0005670685 -0.120135362  0.237319376
+[11,]  0.0215021700  0.206969581  0.341500092
+[12,]  0.1762137594  0.367738270  0.194047678
+[13,]  0.4171124091 -0.053211483  0.118144456
+[14,]  0.2434418813  0.287263880  0.224350627
+[15,] -0.1072602250  0.188307058 -0.020881052
+[16,]  0.0497323940  0.211662949  0.298743457
+[17,]  0.4975098129  0.146899416  0.155205497
+[18,]  0.1959754446  0.013593125 -0.189523325
+[19,]  0.0546573533 -0.312152569 -0.039934322
+[20,]  0.5201323846  0.066988882 -0.001610942
+[21,]  0.0482802523 -0.008094722  0.225218348
+[22,]  0.2272300532  0.131947179  0.134225737
+[23,]  0.2156735915 -0.011183628 -0.053329808
+[24,] -0.0520217539  0.288158416 -0.033078302
+[25,]  0.2094873015  0.115461750 -0.001365554
+[26,]  0.1683338377  0.349354248  0.314427937
+[27,] -0.0369314161 -0.100320971  0.142204153
+[28,]  0.1586850864  0.182559964  0.168842417
+[29,]  0.1067661246  0.042964869  0.436918431
+[30,]  0.3514367967  0.108399981 -0.016608254</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            [,1]       [,2]      [,3]
+ [1,]   9297.384   9857.367  11546.34
+ [2,]   8905.840  10660.895  15140.90
+ [3,]   9592.625  12598.166  16320.94
+ [4,]  12954.229  12310.759  19361.41
+ [5,]  16566.986  12785.503  17550.54
+ [6,]  13752.464  14373.504  17225.17
+ [7,]  15442.434  17948.302  17438.17
+ [8,]  18980.081  21335.174  22409.68
+ [9,]  23872.387  17475.104  21724.95
+[10,]  23858.849  15375.726  26880.70
+[11,]  24371.866  18558.034  36060.46
+[12,]  28666.525  25382.533  43057.91
+[13,]  40623.688  24031.891  48144.96
+[14,]  50513.195  30935.385  58946.31
+[15,]  45095.138  36760.736  57715.45
+[16,]  47337.827  44541.622  74957.56
+[17,]  70888.861  51084.760  86591.39
+[18,]  84781.337  51779.162  70180.30
+[19,]  89415.260  35616.163  67377.70
+[20,] 135923.033  38002.050  67269.16
+[21,] 142485.431  37694.434  82419.41
+[22,] 174862.403  42668.109  93482.21
+[23,] 212575.605  42190.924  88496.82
+[24,] 201517.049  54348.594  85569.50
+[25,] 243732.312  60623.778  85452.65
+[26,] 284760.708  81802.952 112321.35
+[27,] 274244.092  73596.401 128293.91
+[28,] 317762.539  87032.157 149955.37
+[29,] 351688.814  90771.482 215473.63
+[30,] 475285.204 100611.109 211894.99</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   year     path_1     path_2    path_3
+1     0  10000.000  10000.000  10000.00
+2     1   9297.384   9857.367  11546.34
+3     2   8905.840  10660.895  15140.90
+4     3   9592.625  12598.166  16320.94
+5     4  12954.229  12310.759  19361.41
+6     5  16566.986  12785.503  17550.54
+7     6  13752.464  14373.504  17225.17
+8     7  15442.434  17948.302  17438.17
+9     8  18980.081  21335.174  22409.68
+10    9  23872.387  17475.104  21724.95
+11   10  23858.849  15375.726  26880.70
+12   11  24371.866  18558.034  36060.46
+13   12  28666.525  25382.533  43057.91
+14   13  40623.688  24031.891  48144.96
+15   14  50513.195  30935.385  58946.31
+16   15  45095.138  36760.736  57715.45
+17   16  47337.827  44541.622  74957.56
+18   17  70888.861  51084.760  86591.39
+19   18  84781.337  51779.162  70180.30
+20   19  89415.260  35616.163  67377.70
+21   20 135923.033  38002.050  67269.16
+22   21 142485.431  37694.434  82419.41
+23   22 174862.403  42668.109  93482.21
+24   23 212575.605  42190.924  88496.82
+25   24 201517.049  54348.594  85569.50
+26   25 243732.312  60623.778  85452.65
+27   26 284760.708  81802.952 112321.35
+28   27 274244.092  73596.401 128293.91
+29   28 317762.539  87032.157 149955.37
+30   29 351688.814  90771.482 215473.63
+31   30 475285.204 100611.109 211894.99</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 93 × 3
+    year path   wealth
+   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;
+ 1     0 path_1 10000 
+ 2     0 path_2 10000 
+ 3     0 path_3 10000 
+ 4     1 path_1  9297.
+ 5     1 path_2  9857.
+ 6     1 path_3 11546.
+ 7     2 path_1  8906.
+ 8     2 path_2 10661.
+ 9     2 path_3 15141.
+10     3 path_1  9593.
+# ℹ 83 more rows</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   30 1000</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   30 1000</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   [1]   92618.822  280473.227  136285.089   78913.458   43643.941  242218.292
+   [7]  126333.371   82303.275  142196.909  539653.584  150711.248   59118.799
+  [13]  140447.913   35494.527  118069.999  392884.404  138220.101  234021.185
+  [19]  159257.475   43541.251   43890.385   72169.950   36658.162  163075.074
+  [25]  386758.007  177322.173  147179.411   28131.704  320620.548  293790.298
+  [31]  446915.898   45355.268   56325.497  181360.360  197784.111  194237.165
+  [37]   78385.322  156944.115   80308.628  129828.261   35819.397  193820.407
+  [43]  109481.644  157046.965   44338.885  121575.193  149976.897  134813.988
+  [49]  311799.532  133088.658  204947.084  266148.168   96753.371  142034.397
+  [55]  221645.836  140721.752   75514.470   59291.346  180979.982  164200.795
+  [61]  170603.468   58908.123  275297.602  199018.011   82767.406  189648.878
+  [67]  127885.802  234227.939  113084.648   12913.946  175172.156   24625.529
+  [73]   44943.624  320929.871   49678.013   32061.328  119556.362  155711.392
+  [79]  112160.439  172799.277   13234.840  220950.631  120136.766  509667.577
+  [85]   53736.114  455300.015  145833.991  131806.630  112495.878   14743.286
+  [91]   32989.478  173756.616  207784.227  125263.188   96669.972  237248.573
+  [97]   81979.392   30236.082  530340.826  441506.924  112044.450   49481.103
+ [103]  139553.834   45312.209   36058.845   60824.338  109582.374  568240.635
+ [109]  106344.415   40092.158   99846.497  280718.698  198712.532   93388.135
+ [115]   54012.284  422342.985   44352.271   53010.702  152985.773  458799.702
+ [121]   52226.772  140677.703   75866.060  175400.395   49396.780   35826.628
+ [127]   38990.388  108363.106  339550.636   92803.976  188908.076  543065.310
+ [133]  169089.473   61835.615   58040.372   42031.382  114872.466  145795.033
+ [139]   44878.377  218030.098   68823.661  101546.414  182731.886   89078.147
+ [145]   47373.485  228480.833   69606.128  419415.676   21383.401   59835.475
+ [151]  492641.762  111548.437  130519.170   57970.793  269736.627  111790.410
+ [157]  105026.434   94729.413  169593.089   37007.036   84205.006   68720.544
+ [163]   93237.103  167348.943   51661.646   96909.167   63261.658   63712.856
+ [169]  121390.419  438854.467   83542.764   74830.608  233279.748   68080.141
+ [175]  134689.188  131248.240  148459.766   48874.755  156186.255   66984.120
+ [181]  131953.077  393515.168  104599.569  113494.258  181106.175   91149.171
+ [187]   81309.711   73407.617  378233.030  113178.760   97247.201  318478.136
+ [193]   51912.747  445923.102   64254.389  116249.888   79409.299  262526.258
+ [199]  202554.600  219078.754  153569.813  136480.832  146315.432   31339.706
+ [205]   23280.611   19965.294  105377.392  170471.372  132423.878  336735.762
+ [211]   23125.304  120789.473   20924.875  120158.012  128166.506  729757.153
+ [217]  454120.131  230481.942  202065.989  103506.369   48043.767  127445.195
+ [223]   89882.116   31608.749  148868.287   27587.393   52726.581  111490.723
+ [229]   73536.533  516458.739   41481.612   84887.707  153093.244  140365.853
+ [235]  277710.787   93996.378   42955.589  137528.635   52323.212  129809.638
+ [241]  209091.740  571148.266  164394.727  430522.837   39909.250   62236.273
+ [247]  261873.297  119918.943  238820.598  141406.062   24949.435   39255.871
+ [253]  243624.145   64820.981  151371.495   99754.329  306606.024   24333.471
+ [259]  216459.545  160740.119  312369.148  203668.689  135669.001    6489.032
+ [265]   43351.843  225919.044   38784.773  165525.031   27940.519  155639.408
+ [271]   79925.335   51604.238  271089.227   56671.922  431961.693  152029.809
+ [277]  811024.411  221975.571   80398.341  327287.704  147903.819   90311.701
+ [283]   50252.189  267226.757   60738.168  322176.497  176372.489   40318.265
+ [289]  428400.847   43968.303  166469.524   89672.210  114647.676  388158.704
+ [295]  187008.031  156660.123   40984.412   39260.312   42224.288   34158.717
+ [301]  228155.122  157212.186   80217.941   89827.345   76478.468   90336.446
+ [307]   80188.262   81918.686  119296.107   39997.675   79094.930   72049.556
+ [313]   58740.027  194059.671  106741.571  278231.192   76227.837  403259.893
+ [319]   99500.204   14374.675  152683.634  179382.614   70727.526   76919.761
+ [325]   65861.274   57117.922  142541.409   20763.786   67909.233   91892.383
+ [331]  161649.561   41303.537  161433.904   88325.706  230231.694  130385.638
+ [337]   87376.904   24367.106  308908.440   70675.109  410430.377  375039.227
+ [343]  359971.581  130276.494   47062.073  308843.690  169298.218  129364.017
+ [349]  173869.407   30860.402  106952.825  298755.813  456096.623  102751.438
+ [355]   56114.522   88251.956   58902.419   84101.880  102785.902  168207.690
+ [361]  394348.541  104916.824   97918.752  121194.008   15940.636  168651.257
+ [367]   71545.036  422636.828   90246.162   79940.801  120033.942   76976.905
+ [373]  770821.459  163140.087  185486.771   98582.142  221119.293  287633.261
+ [379]  168747.706   85151.216   41383.845  316589.398   70311.057  263959.971
+ [385]  103132.029  295061.829   51690.488  248779.858   36110.147   36686.909
+ [391]   74453.242   66496.448   95930.726   45492.762  426888.329   53927.687
+ [397]   85844.371  218536.536  178182.035  229370.072  178728.360   99796.477
+ [403]   43912.028   86966.408   43120.646   36632.174 1539212.084  169390.843
+ [409]   18941.729   86862.015  225378.470   16098.046   53228.112   48868.188
+ [415]  146633.206   79091.419   21700.544  161561.449   67574.088  122809.467
+ [421]  120259.823  290244.169   56364.071  250171.671   41880.980  138344.514
+ [427]   49486.924   87697.359  124834.465   25631.213  570697.154   35786.030
+ [433]   22770.992   89219.629  268149.770  491540.807  251002.625   91495.368
+ [439]  363418.192  153398.089   75148.094   65598.679   57755.041  149078.424
+ [445]  137163.882  208278.844  409995.649   28317.351  139935.255  146458.549
+ [451]   80400.366  278709.372  116167.254   90906.285   58072.140  124048.210
+ [457]  122130.909   79862.286   46146.590  218863.748   58663.944  102034.557
+ [463]  325336.679  357675.690  315062.425   22097.294  164848.136  271598.747
+ [469]   93358.442  400691.487  127571.546   78522.680   55327.783  105803.224
+ [475]  111292.608  100474.063  267387.225   73703.553  128055.141  212313.180
+ [481]  121821.422  146670.489  141916.100  186032.058   46107.038  187274.142
+ [487]  138066.923  130887.041   10660.151  175192.082   73661.649  100458.355
+ [493]  167087.062   64593.802  124876.458  162697.913  129325.342  393716.057
+ [499]   67893.482  165538.147   89374.583   95048.716   74221.557  170265.507
+ [505]   47569.111  279901.267  792964.174  117774.298  170302.913  194606.838
+ [511]  360303.629   87427.473  160244.388   66278.676   53508.981  443929.537
+ [517]  239723.815   63938.913  308394.290   67082.206  155505.780   62532.898
+ [523]   43993.895   37130.596  109306.615  206572.990   14015.155  301341.997
+ [529]   77841.143  111934.126   52996.564   64425.932  117789.900  208470.014
+ [535]   34560.842  151384.609   82083.979  139387.703  253203.058   86199.184
+ [541]  311474.087   42484.492   31833.095   21595.235   30971.768  111052.959
+ [547]  193867.473   20643.583  122716.377  376841.644  117072.865  124155.870
+ [553]  106620.712  134548.168  104208.340  115780.289   65785.222   66750.917
+ [559]   65636.333   66042.642  214654.727   43359.253   73227.507   76827.116
+ [565]   15502.326  109145.740  302494.351   33434.921   69186.148  128396.177
+ [571]   92253.426  208985.187  240215.324   49436.448   67595.710   87700.865
+ [577]  262187.319  254588.676   40268.542   14323.503   58992.439   71003.907
+ [583]  319443.403  104845.218  123669.237  115713.680   97125.392   62035.646
+ [589]  241013.472  129989.455  238432.687  285080.709  151237.287   33865.181
+ [595]  138651.366   46353.897  101223.388  105255.091  131976.958  157300.880
+ [601]  134730.273   47693.764  152737.344   76333.483  247352.147  171438.177
+ [607]  101655.921  100667.918   41743.087   64542.658   59255.724  300472.295
+ [613]   48455.993  314221.368   65228.202   41852.291   63642.743  173698.015
+ [619]   57554.032  174729.796   79944.408  331613.696   51476.678   11756.804
+ [625]   33006.345  119181.933   70975.477  295068.908  101568.815  544302.000
+ [631]  124460.671  153241.213  141239.838   79427.505  117093.062   63893.220
+ [637]  963021.765   25392.724   81845.117  242206.765   64760.972   33841.740
+ [643]   46593.540  263225.501   48623.922   75142.514  236009.260   94799.748
+ [649]   68196.122  277336.131  118087.137   21431.197   86515.958  121548.006
+ [655]  264786.595   59610.612   24529.394   40031.247  357967.705  259838.338
+ [661]   55172.529  181184.254  120480.756   36165.069   33054.092   61468.100
+ [667]   32638.440   94784.780   95094.499  409331.066   12785.756   83401.487
+ [673]   43941.528   44698.739   84516.547   79407.682  108642.429  130112.228
+ [679]  570512.876  423145.560  247480.057  179260.089  311569.521   89489.295
+ [685]   43884.969   82461.409    9298.243   78737.130  269430.811   49308.790
+ [691]  277067.965  463957.865   82026.514  269313.253  210418.503   16579.384
+ [697]   35956.289  119958.635   80582.534  137154.254   55819.721  229581.628
+ [703]  438353.822  111127.417   90343.752   23290.158  112261.952   39146.218
+ [709]  123922.641   23425.959   92454.366   90924.672  365605.061 1012642.488
+ [715]   57570.802  209060.080  187473.186   36582.904  156034.294  357576.785
+ [721]  179506.844  177133.535   53624.573  246069.190  450685.479  108120.234
+ [727]   92927.036   56203.515  205248.182   72000.925   90533.886   25773.394
+ [733]   70125.688   30553.752  104948.246   30738.416  429026.220  135550.343
+ [739]   67021.622   41903.106   69826.520  147826.365   40547.421   67485.428
+ [745]  253028.268  299362.276  136660.564   29381.120  170717.115   91665.378
+ [751]  417052.145   96028.036  349924.420  130193.980  118721.840  117045.206
+ [757]   53799.333   16102.688  148089.572   57999.746  108191.306  218825.693
+ [763]   41453.941   75865.505   61397.402  343427.926  157062.374   25209.379
+ [769]  211219.480   14988.557  160842.716  148694.419   89722.959  175504.202
+ [775]  165273.482  142565.663   95261.362  341767.753  463458.860   87367.551
+ [781]  162536.019   83572.490   70885.943  177715.472   30295.182  354182.516
+ [787]   84407.632  233521.812  161025.574  155805.138   42589.410  245533.522
+ [793]  117842.463  128366.818   78680.418  513624.000  232795.442  277916.678
+ [799]   30726.321  247798.353  433522.944  140222.590   53140.540   57019.343
+ [805]  262319.922  127606.650  161668.245   40085.319   37504.294   44383.146
+ [811]  133268.369   27371.475  176106.606  228843.358  121623.081   32961.406
+ [817]  100348.703  104296.668   12408.180  463166.131   41732.034  572349.292
+ [823]   44239.512  141539.659  154460.389   89376.905  340699.391   59008.015
+ [829]   24596.977  127623.920   53381.778   43411.395   53837.963  247597.536
+ [835]  150484.370  151857.087  462654.758  242668.147  165684.516  131548.454
+ [841]   71402.418   47203.355  358055.251  213951.035   62353.573   77625.226
+ [847]   38771.940  156844.264   39065.915  524088.900   53012.398  139706.354
+ [853]   54938.221   55304.732   41204.946   44027.581  121763.748  103063.255
+ [859]   71711.167  106132.810  117884.916   98127.157  107953.581   34877.158
+ [865]   78876.251  142358.541  100832.485   71955.528  107070.786  185610.090
+ [871]   54492.201   94057.547   47855.677   30286.191   73472.503   28479.439
+ [877]  672964.208   68525.883  120224.984   25489.032  127646.758  128220.187
+ [883]   22861.030  165993.068  133305.440  103848.611   49313.401   10434.805
+ [889]  142978.504  580439.110  109393.196  172721.657   64691.404   80636.482
+ [895]   81381.636  165670.476  425431.732   91798.917  310728.129  161921.839
+ [901]   41272.941   36341.357  156336.462  137641.370   31647.622  298726.752
+ [907]  118223.783   99690.801  142792.962  162595.949   38455.603   67612.583
+ [913]   93886.246   71468.623  170225.271   50730.947  177808.925   70726.622
+ [919]  102901.608   76803.890  228988.183  170811.362  175180.625  240613.289
+ [925]   65364.670  116375.519  385918.156   60647.417   98495.208  166300.627
+ [931]  415972.361   47837.161  192025.181  344044.838  448649.779   42942.923
+ [937]   93583.915   43140.948  693375.194  170322.496   66514.625  273955.694
+ [943]  136615.263   57243.120  291887.600  145101.110   44748.370  141195.679
+ [949]  157213.474  166172.985   39673.200   28099.882  131556.745   81977.312
+ [955]   61491.250  150525.604   53740.316   81603.405  192373.683   59345.737
+ [961]  111563.745  148709.055   95026.730  329001.146  238757.007   63120.014
+ [967]  105352.684  147601.098   12633.591  174508.451  230081.302   69105.557
+ [973]   40376.322   33398.023  201732.972  427996.725  108237.091  295198.838
+ [979]   41163.069  245365.119   25701.940  171471.385  137507.438   19817.940
+ [985]  407352.315  121151.980  150564.802  144252.154  112836.219  290656.860
+ [991]  183062.033  118887.605  459167.977  294318.459   69354.349   56121.633
+ [997]  214943.714  496412.368  518256.782   54782.408</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   6489   62186  112102  150423  179875 1539212 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      10%       50%       90% 
+ 38783.49 112102.44 315215.12 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  10961.18  12017.98  13101.68  14202.28  15363.38  16606.40  17763.11
+ [8]  19287.04  20842.02  22597.87  24512.31  26322.65  28838.39  31680.78
+[15]  33814.80  35979.97  39731.64  42842.86  47453.36  50660.97  54144.43
+[22]  60078.28  64841.38  70324.72  74224.87  81135.42  88106.81  97237.85
+[29] 106552.45 112102.44</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  13100.99  15620.33  17833.07  20484.05  23275.82  26477.03  29899.73
+ [8]  33828.82  37964.51  42860.40  48637.07  53125.00  59930.44  64961.78
+[15]  71121.16  77672.67  85413.52  94284.61 103308.33 115323.14 128466.95
+[22] 140724.55 161186.53 183306.60 197213.82 214540.96 242332.37 261196.25
+[29] 285412.13 315215.12</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  8972.438  8842.771  9013.063  8892.674  9171.269  9766.434 10128.270
+ [8] 10651.587 11202.576 11764.440 12690.639 12984.353 13762.568 14355.721
+[15] 15155.441 15899.315 17415.105 18144.124 19393.689 20782.120 22970.467
+[22] 24345.215 24515.590 26789.999 28881.171 29697.371 31393.235 32250.649
+[29] 34885.311 38783.490</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   year     lower    median     upper
+1     1  13100.99  10961.18  8972.438
+2     2  15620.33  12017.98  8842.771
+3     3  17833.07  13101.68  9013.063
+4     4  20484.05  14202.28  8892.674
+5     5  23275.82  15363.38  9171.269
+6     6  26477.03  16606.40  9766.434
+7     7  29899.73  17763.11 10128.270
+8     8  33828.82  19287.04 10651.587
+9     9  37964.51  20842.02 11202.576
+10   10  42860.40  22597.87 11764.440
+11   11  48637.07  24512.31 12690.639
+12   12  53125.00  26322.65 12984.353
+13   13  59930.44  28838.39 13762.568
+14   14  64961.78  31680.78 14355.721
+15   15  71121.16  33814.80 15155.441
+16   16  77672.67  35979.97 15899.315
+17   17  85413.52  39731.64 17415.105
+18   18  94284.61  42842.86 18144.124
+19   19 103308.33  47453.36 19393.689
+20   20 115323.14  50660.97 20782.120
+21   21 128466.95  54144.43 22970.467
+22   22 140724.55  60078.28 24345.215
+23   23 161186.53  64841.38 24515.590
+24   24 183306.60  70324.72 26789.999
+25   25 197213.82  74224.87 28881.171
+26   26 214540.96  81135.42 29697.371
+27   27 242332.37  88106.81 31393.235
+28   28 261196.25  97237.85 32250.649
+29   29 285412.13 106552.45 34885.311
+30   30 315215.12 112102.44 38783.490</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-1-9.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
