@@ -10,6 +10,7 @@ format: html
 library(tidyquant)
 library(ggplot2)
 library(dplyr)
+library(plotly)
 
 sp500 <- tq_get("^GSPC", 
 from = "1950-01-01")
@@ -290,7 +291,7 @@ lower_path <- apply(
     wealth_paths_1000,
     1,
     quantile,
-    probs = 0.90
+    probs = 0.10
 )
 lower_path
 
@@ -298,7 +299,7 @@ upper_path <- apply(
     wealth_paths_1000,
     1,
     quantile,
-    probs = 0.10
+    probs = 0.90
 )
 upper_path
 
@@ -331,4 +332,94 @@ ggplot(
                 x = "Year",
                 y = "Portfolio Value"
             )
+
+
+### 4 Investment Strategies
+
+initial_wealth <- 10000
+annual_contribution <- 5000
+contribution_growth <- 0.03
+annual_return <- 0.06
+n_years <- 30
+
+# Creating a data frame to store our results
+strategies <- data.frame(
+  year = 0:n_years,
+  no_investment = numeric(n_years + 1),
+  initial_only = numeric(n_years + 1),
+  constant_contributions = numeric(n_years + 1),
+  growing_contributions = numeric(n_years + 1)
+)
+# All strategies begin with $10k
+strategies[1, 2:5] <- initial_wealth
+
+# Calculate wealth year by year
+for (year in 1:n_years) {
+
+  previous <- year
+
+  strategies$no_investment[year + 1] <-
+    strategies$no_investment[previous] + annual_contribution
+
+  strategies$initial_only[year + 1] <-
+    strategies$initial_only[previous] * (1 + annual_return)
+
+  strategies$constant_contributions[year + 1] <-
+    strategies$constant_contributions[previous] *
+    (1 + annual_return) + annual_contribution
+
+  strategies$growing_contributions[year + 1] <-
+    strategies$growing_contributions[previous] *
+    (1 + annual_return) +
+    annual_contribution * (1 + contribution_growth)^(year - 1)
+}
+
+strategies
+
+## Visualizing the comparison
+library(tidyr)
+library(ggplot2)
+
+strategies_long <- strategies |>
+  pivot_longer(
+    cols = -year,
+    names_to = "strategy",
+    values_to = "wealth"
+  )
+
+ggplotly(
+    ggplot(
+  data = strategies_long,
+  aes(x = year, y = wealth, color = strategy)
+) +
+  geom_line(linewidth = 1.2) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(
+    title = "Comparing Investment Strategies Over 30 Years",
+    x = "Year",
+    y = "Accumulated Wealth",
+    color = "Investment Strategy"
+  ) +
+  theme_minimal()
+)
+```
+
+## Stock and Bond Portfolio Analysis
+
+```{r}
+#| echo: false
+library(tidyquant)
+library(ggplot2)
+library(dplyr)
+
+library(readxl)
+
+historical_data <- read_excel(
+  "historical_returns.xlsx",
+  sheet = "Returns by year",
+)
+
+View(historical_data)
+
+
 ```
